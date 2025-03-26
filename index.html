@@ -14,6 +14,8 @@
         button:hover { background-color: #006699; }
         #mine, #inventory, #shop, #referral, #withdraw { display: none; }
         .active { display: block; }
+        .item { margin: 5px; }
+        .selected { background-color: #00cc00; }
     </style>
 </head>
 <body>
@@ -26,8 +28,13 @@
         </div>
     </div>
     <div class="content">
-        <div id="mine">Tốc độ mine: <span id="mineRate">0</span> TCT/giờ</div>
-        <div id="inventory">Kho: <span id="items">Trống</span></div>
+        <div id="mine">
+            Tốc độ mine: <span id="mineRate">0</span> TCT/giờ
+            <div id="miningItems"></div>
+        </div>
+        <div id="inventory">
+            Kho: <div id="items"></div>
+        </div>
         <div id="shop" class="active">
             <h2>Shop</h2>
             <button onclick="buyChest(1)">Rương 1 TON</button>
@@ -35,7 +42,9 @@
             <button onclick="buyChest(6)">Rương 6 TON</button>
             <button onclick="buyChest(10)">Rương 10 TON</button>
         </div>
-        <div id="referral">Mời bạn: <input id="refLink" readonly></div>
+        <div id="referral">
+            Mời bạn: <input id="refLink" readonly>
+        </div>
         <div id="withdraw">
             <button onclick="withdraw('TON')">Rút TON (1000 TCT = 0.1 TON)</button>
             <button onclick="withdraw('USDT')">Rút USDT (1000 TCT = 0.5 USDT)</button>
@@ -55,8 +64,12 @@
         tg.ready();
         const user = tg.initDataUnsafe.user;
 
+        let inventory = [];
+        let miningItems = [];
+
         if (user) {
             document.getElementById("refLink").value = `t.me/TreasureChestBot?start=${user.id}`;
+            tg.sendData(JSON.stringify({ action: "get_data", userId: user.id }));
         }
 
         function buyChest(ton) {
@@ -67,16 +80,46 @@
             tg.sendData(JSON.stringify({ action: "withdraw", userId: user.id, currency: currency }));
         }
 
+        function toggleMining(item) {
+            if (miningItems.includes(item)) {
+                miningItems = miningItems.filter(i => i !== item);
+            } else if (miningItems.length < 10) {
+                miningItems.push(item);
+            }
+            updateUI();
+            tg.sendData(JSON.stringify({ action: "update_mining", userId: user.id, miningItems: miningItems }));
+        }
+
         function showTab(tab) {
             document.querySelectorAll('.content > div').forEach(div => div.classList.remove('active'));
             document.getElementById(tab).classList.add('active');
         }
 
-        tg.onEvent("web_app_data", (event) => {
-            const data = JSON.parse(event.data);
+        function updateUI(data) {
             document.getElementById("tct").innerText = data.balance || 0;
             document.getElementById("ton").innerText = data.ton || 0;
             document.getElementById("usdt").innerText = data.usdt || 0;
+            document.getElementById("mineRate").innerText = data.mineRate || 0;
+
+            inventory = data.items || [];
+            miningItems = data.miningItems || [];
+
+            const invDiv = document.getElementById("items");
+            invDiv.innerHTML = "";
+            inventory.forEach(item => {
+                const btn = document.createElement("button");
+                btn.innerText = item;
+                btn.className = "item" + (miningItems.includes(item) ? " selected" : "");
+                btn.onclick = () => toggleMining(item);
+                invDiv.appendChild(btn);
+            });
+
+            document.getElementById("miningItems").innerText = "Đang mine: " + (miningItems.join(", ") || "Chưa chọn");
+        }
+
+        tg.onEvent("web_app_data", (event) => {
+            const data = JSON.parse(event.data);
+            updateUI(data);
         });
     </script>
 </body>
