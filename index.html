@@ -1,126 +1,268 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Treasure Chest Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEB Mining Game</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; background-color: #f0f0f0; }
-        .header { padding: 10px; background-color: #0088cc; color: white; text-align: center; }
-        .balance { display: flex; justify-content: space-around; margin: 10px 0; }
-        .balance div { background-color: #fff; padding: 5px 10px; border-radius: 5px; }
-        .content { padding: 20px; min-height: 60vh; }
-        .footer { position: fixed; bottom: 0; width: 100%; background-color: #333; color: white; display: flex; justify-content: space-around; padding: 10px 0; }
-        .footer div { cursor: pointer; }
-        button { padding: 10px 20px; background-color: #0088cc; color: white; border: none; cursor: pointer; margin: 5px; }
-        button:hover { background-color: #006699; }
-        #mine, #inventory, #shop, #referral, #withdraw { display: none; }
-        .active { display: block; }
-        .item { margin: 5px; }
-        .selected { background-color: #00cc00; }
+        body { font-family: Arial, sans-serif; text-align: center; color: black; margin: 0; background: #f5f5f5; }
+        .header { display: flex; justify-content: space-around; padding: 10px; background: #e0e0e0; font-weight: bold; }
+        .content { padding: 20px; min-height: 70vh; }
+        .menu { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #fff; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); }
+        .menu button { padding: 10px; background-color: #007bff; color: white; border: none; flex: 1; font-size: 14px; }
+        .menu button:hover { background-color: #0056b3; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 10px 0; background: #fff; padding: 10px; border-radius: 5px; }
+        button { cursor: pointer; }
+        .shop button { margin: 5px; padding: 10px 20px; background: #28a745; }
+        .claim-btn { background: #ffc107; color: black; padding: 10px 20px; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Treasure Chest Game</h1>
-        <div class="balance">
-            <div>TCT: <span id="tct">0</span></div>
-            <div>TON: <span id="ton">0</span></div>
-            <div>USDT: <span id="usdt">0</span></div>
-        </div>
+        <span>PEB: <span id="peb">0</span></span>
+        <span>TON: <span id="ton">10</span></span>
+        <span>USDT: <span id="usdt">0</span></span>
     </div>
-    <div class="content">
-        <div id="mine">
-            Tốc độ mine: <span id="mineRate">0</span> TCT/giờ
-            <div id="miningItems"></div>
-        </div>
-        <div id="inventory">
-            Kho: <div id="items"></div>
-        </div>
-        <div id="shop" class="active">
-            <h2>Shop</h2>
-            <button onclick="buyChest(1)">Rương 1 TON</button>
-            <button onclick="buyChest(3)">Rương 3 TON</button>
-            <button onclick="buyChest(6)">Rương 6 TON</button>
-            <button onclick="buyChest(10)">Rương 10 TON</button>
-        </div>
-        <div id="referral">
-            Mời bạn: <input id="refLink" readonly>
-        </div>
-        <div id="withdraw">
-            <button onclick="withdraw('TON')">Rút TON (1000 TCT = 0.1 TON)</button>
-            <button onclick="withdraw('USDT')">Rút USDT (1000 TCT = 0.5 USDT)</button>
-        </div>
+    <div class="content" id="content">
+        <h1>Welcome to PEB Mining</h1>
     </div>
-    <div class="footer">
-        <div onclick="showTab('mine')">Mine</div>
-        <div onclick="showTab('inventory')">Kho</div>
-        <div onclick="showTab('shop')">Shop</div>
-        <div onclick="showTab('referral')">Giới thiệu</div>
-        <div onclick="showTab('withdraw')">Rút tiền</div>
+    <div class="menu">
+        <button onclick="showMine()">Mine</button>
+        <button onclick="showInventory()">Kho</button>
+        <button onclick="showShop()">Shop</button>
+        <button onclick="showInvite()">Giới thiệu</button>
+        <button onclick="showTasks()">Nhiệm vụ</button>
     </div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        const user = tg.initDataUnsafe.user;
+        // Khởi tạo dữ liệu
+        let playerData = JSON.parse(localStorage.getItem('playerData')) || {
+            peb: 0,
+            ton: 10,
+            usdt: 0,
+            inventory: [],
+            miningSpeed: 0,
+            lastLogin: 0,
+            mineCount: 0,
+            pebCollectedToday: 0,
+            miningStartTime: 0,
+            pendingPeb: 0,
+            tasksCompleted: { login: false, mine: false, buy: false, collect: false },
+            playerId: Telegram.WebApp.initDataUnsafe.user ? Telegram.WebApp.initDataUnsafe.user.id : '12345'
+        };
 
-        let inventory = [];
-        let miningItems = [];
-
-        if (user) {
-            document.getElementById("refLink").value = `t.me/TreasureChestBot?start=${user.id}`;
-            tg.sendData(JSON.stringify({ action: "get_data", userId: user.id }));
+        // Cập nhật giao diện và lưu dữ liệu
+        function saveData() {
+            localStorage.setItem('playerData', JSON.stringify(playerData));
+            updateHeader();
+            syncWithServer();
         }
 
-        function buyChest(ton) {
-            tg.sendData(JSON.stringify({ action: "buy_chest", userId: user.id, ton: ton }));
+        function updateHeader() {
+            document.getElementById('peb').textContent = playerData.peb.toFixed(2);
+            document.getElementById('ton').textContent = playerData.ton.toFixed(2);
+            document.getElementById('usdt').textContent = playerData.usdt.toFixed(2);
         }
 
-        function withdraw(currency) {
-            tg.sendData(JSON.stringify({ action: "withdraw", userId: user.id, currency: currency }));
-        }
-
-        function toggleMining(item) {
-            if (miningItems.includes(item)) {
-                miningItems = miningItems.filter(i => i !== item);
-            } else if (miningItems.length < 10) {
-                miningItems.push(item);
+        // Khai thác tự động
+        function startMining() {
+            if (playerData.miningSpeed > 0) {
+                setInterval(() => {
+                    let elapsedMs = playerData.miningStartTime ? Date.now() - playerData.miningStartTime : 0;
+                    let cycleDuration = 24 * 60 * 60 * 1000; // 24 giờ
+                    if (elapsedMs >= cycleDuration) {
+                        playerData.pendingPeb = playerData.miningSpeed * 24;
+                        playerData.miningStartTime = Date.now();
+                        saveData();
+                    }
+                    if (document.getElementById('content').innerHTML.includes('Mine')) showMine();
+                }, 1000);
             }
-            updateUI();
-            tg.sendData(JSON.stringify({ action: "update_mining", userId: user.id, miningItems: miningItems }));
         }
 
-        function showTab(tab) {
-            document.querySelectorAll('.content > div').forEach(div => div.classList.remove('active'));
-            document.getElementById(tab).classList.add('active');
+        // Nhận PEB sau 24h
+        function claimPeb() {
+            if (playerData.pendingPeb > 0) {
+                playerData.peb += playerData.pendingPeb;
+                playerData.pebCollectedToday = Math.min(playerData.pebCollectedToday + playerData.pendingPeb, 100);
+                if (playerData.pebCollectedToday >= 100 && !playerData.tasksCompleted.collect) {
+                    playerData.inventory.push('D');
+                    playerData.tasksCompleted.collect = true;
+                }
+                playerData.pendingPeb = 0;
+                saveData();
+                showMine();
+            }
         }
 
-        function updateUI(data) {
-            document.getElementById("tct").innerText = data.balance || 0;
-            document.getElementById("ton").innerText = data.ton || 0;
-            document.getElementById("usdt").innerText = data.usdt || 0;
-            document.getElementById("mineRate").innerText = data.mineRate || 0;
-
-            inventory = data.items || [];
-            miningItems = data.miningItems || [];
-
-            const invDiv = document.getElementById("items");
-            invDiv.innerHTML = "";
-            inventory.forEach(item => {
-                const btn = document.createElement("button");
-                btn.innerText = item;
-                btn.className = "item" + (miningItems.includes(item) ? " selected" : "");
-                btn.onclick = () => toggleMining(item);
-                invDiv.appendChild(btn);
-            });
-
-            document.getElementById("miningItems").innerText = "Đang mine: " + (miningItems.join(", ") || "Chưa chọn");
+        // Các mục giao diện
+        function showMine() {
+            let elapsedMs = playerData.miningStartTime ? Date.now() - playerData.miningStartTime : 0;
+            let timeLeft = (24 * 60 * 60 * 1000 - elapsedMs) / 1000;
+            let hoursLeft = Math.floor(timeLeft / 3600);
+            let minutesLeft = Math.floor((timeLeft % 3600) / 60);
+            let secondsLeft = Math.floor(timeLeft % 60);
+            let pendingHtml = playerData.pendingPeb > 0 ? `<button class="claim-btn" onclick="claimPeb()">Nhận ${playerData.pendingPeb.toFixed(2)} PEB</button>` : '';
+            document.getElementById('content').innerHTML = `
+                <h1>Mine</h1>
+                <p>Tốc độ: ${playerData.miningSpeed} PEB/giờ</p>
+                ${playerData.miningSpeed === 0 ? '<button onclick="startMiningCycle()">Bắt đầu khai thác</button>' : 
+                `<p>Thời gian còn lại: ${hoursLeft}h ${minutesLeft}m ${secondsLeft}s</p>`}
+                ${pendingHtml}
+            `;
         }
 
-        tg.onEvent("web_app_data", (event) => {
-            const data = JSON.parse(event.data);
-            updateUI(data);
-        });
+        function showInventory() {
+            let items = playerData.inventory.length ? playerData.inventory.join(', ') : 'Trống';
+            document.getElementById('content').innerHTML = `<h1>Kho</h1><p>Vật phẩm: ${items}</p>`;
+        }
+
+        function showShop() {
+            document.getElementById('content').innerHTML = `
+                <h1>Shop</h1>
+                <div class="shop">
+                    <button onclick="buyChest(1)">Rương 1 TON</button>
+                    <button onclick="buyChest(3)">Rương 3 TON</button>
+                    <button onclick="buyChest(6)">Rương 6 TON</button>
+                    <button onclick="buyChest(10)">Rương 10 TON</button>
+                </div>
+            `;
+        }
+
+        function showInvite() {
+            document.getElementById('content').innerHTML = `
+                <h1>Giới thiệu</h1>
+                <p>Link mời: t.me/PEBMiningBot?start=${playerData.playerId}</p>
+                <p>Hoa hồng: 5% PEB từ người được mời</p>
+            `;
+        }
+
+        function showTasks() {
+            let today = new Date().toDateString();
+            if (playerData.lastLogin !== today) {
+                playerData.peb += 1;
+                playerData.lastLogin = today;
+                playerData.tasksCompleted = { login: true, mine: false, buy: false, collect: false };
+                playerData.mineCount = 0;
+                playerData.pebCollectedToday = 0;
+                saveData();
+            }
+            document.getElementById('content').innerHTML = `
+                <h1>Nhiệm vụ hàng ngày</h1>
+                <ul>
+                    <li>Đăng nhập hàng ngày - 1 PEB (${playerData.tasksCompleted.login ? 'Đã nhận' : 'Chưa nhận'})</li>
+                    <li>Khai thác liên tục (${playerData.mineCount}/5) - 20 PEB 
+                        ${playerData.tasksCompleted.mine ? '(Đã nhận)' : '<button onclick="claimMineTask()">Claim</button>'}</li>
+                    <li>Mua rương - Vật phẩm E 
+                        ${playerData.tasksCompleted.buy ? '(Đã nhận)' : '<button onclick="showShop()">Go</button>'}</li>
+                    <li>Mời bạn bè - 5% hoa hồng <button onclick="showInvite()">Go</button></li>
+                    <li>Thu thập 100 PEB (${playerData.pebCollectedToday.toFixed(2)}/100) - Vật phẩm D 
+                        ${playerData.tasksCompleted.collect ? '(Đã nhận)' : ''}</li>
+                </ul>
+            `;
+        }
+
+        // Logic nhiệm vụ
+        function claimMineTask() {
+            if (playerData.mineCount >= 5 && !playerData.tasksCompleted.mine) {
+                playerData.peb += 20;
+                playerData.tasksCompleted.mine = true;
+                saveData();
+                showTasks();
+            } else {
+                alert('Chưa hoàn thành nhiệm vụ!');
+            }
+        }
+
+        // Bắt đầu chu kỳ khai thác
+        function startMiningCycle() {
+            if (playerData.miningSpeed > 0 && !playerData.miningStartTime) {
+                playerData.miningStartTime = Date.now();
+                playerData.mineCount += 1;
+                saveData();
+                startMining();
+                showMine();
+            }
+        }
+
+        // Logic mua rương
+        function buyChest(tonCost) {
+            if (playerData.ton >= tonCost) {
+                playerData.ton -= tonCost;
+                let item = rollItem(tonCost);
+                playerData.inventory.push(item);
+                playerData.miningSpeed += getMiningSpeed(item);
+                if (!playerData.tasksCompleted.buy) {
+                    playerData.inventory.push('E');
+                    playerData.tasksCompleted.buy = true;
+                }
+                saveData();
+                showInventory();
+            } else {
+                alert('Không đủ TON!');
+            }
+        }
+
+        function rollItem(tonCost) {
+            let rand = Math.random() * 100;
+            if (tonCost === 1) {
+                if (rand < 50) return 'G';
+                if (rand < 70) return 'E';
+                if (rand < 85) return 'D';
+                if (rand < 95) return 'C';
+                if (rand < 98) return 'B';
+                return 'A';
+            } else if (tonCost === 3) {
+                if (rand < 30) return 'G';
+                if (rand < 55) return 'E';
+                if (rand < 75) return 'D';
+                if (rand < 90) return 'C';
+                if (rand < 95) return 'B';
+                return 'A';
+            } else if (tonCost === 6) {
+                if (rand < 20) return 'G';
+                if (rand < 40) return 'E';
+                if (rand < 60) return 'D';
+                if (rand < 75) return 'C';
+                if (rand < 85) return 'B';
+                if (rand < 93) return 'A';
+                if (rand < 97) return 'S';
+                return 'SS';
+            } else if (tonCost === 10) {
+                if (rand < 10) return 'G';
+                if (rand < 25) return 'E';
+                if (rand < 40) return 'D';
+                if (rand < 55) return 'C';
+                if (rand < 70) return 'B';
+                if (rand < 82) return 'A';
+                if (rand < 90) return 'S';
+                if (rand < 96) return 'SS';
+                return 'SSR';
+            }
+            return 'G';
+        }
+
+        function getMiningSpeed(item) {
+            const speeds = { G: 0.5, E: 1, D: 2, C: 3, B: 5, A: 8, S: 12, SS: 20, SSR: 30 };
+            return speeds[item] || 0;
+        }
+
+        // Đồng bộ với Google Sheets (Mã hóa dữ liệu)
+        function syncWithServer() {
+            let encodedData = btoa(JSON.stringify(playerData)); // Mã hóa Base64
+            fetch('https://script.google.com/macros/s/AKfycbweVGGZYayDyZeYpcq1M6I5QyyaEy5DusfHn7d0VoQB3mDxQDl6pLrt078sP1vRQAs8RA/exec', {
+                method: 'POST',
+                body: JSON.stringify({ data: encodedData }),
+                headers: { 'Content-Type': 'application/json' }
+            }).catch(err => console.log('Sync failed:', err));
+        }
+
+        // Khởi động
+        window.Telegram.WebApp.ready();
+        if (playerData.miningSpeed > 0 && playerData.miningStartTime) startMining();
+        updateHeader();
     </script>
 </body>
 </html>
