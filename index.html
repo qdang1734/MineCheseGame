@@ -71,6 +71,13 @@
             document.querySelectorAll('.content > div').forEach(div => div.classList.remove('active'));
             document.getElementById(tab).classList.add('active');
         }
+
+        tg.onEvent("web_app_data", (event) => {
+            const data = JSON.parse(event.data);
+            document.getElementById("tct").innerText = data.balance || 0;
+            document.getElementById("ton").innerText = data.ton || 0;
+            document.getElementById("usdt").innerText = data.usdt || 0;
+        });
     </script>
 </body>
 </html>
