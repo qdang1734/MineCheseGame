@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Treasure Chest Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background-color: #f0f0f0; }
+        .header { padding: 10px; background-color: #0088cc; color: white; text-align: center; }
+        .balance { display: flex; justify-content: space-around; margin: 10px 0; }
+        .balance div { background-color: #fff; padding: 5px 10px; border-radius: 5px; }
+        .content { padding: 20px; min-height: 60vh; }
+        .footer { position: fixed; bottom: 0; width: 100%; background-color: #333; color: white; display: flex; justify-content: space-around; padding: 10px 0; }
+        .footer div { cursor: pointer; }
+        button { padding: 10px 20px; background-color: #0088cc; color: white; border: none; cursor: pointer; margin: 5px; }
+        button:hover { background-color: #006699; }
+        #mine, #inventory, #shop, #referral, #withdraw { display: none; }
+        .active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Treasure Chest Game</h1>
+        <div class="balance">
+            <div>TCT: <span id="tct">0</span></div>
+            <div>TON: <span id="ton">0</span></div>
+            <div>USDT: <span id="usdt">0</span></div>
+        </div>
+    </div>
+    <div class="content">
+        <div id="mine">Tốc độ mine: <span id="mineRate">0</span> TCT/giờ</div>
+        <div id="inventory">Kho: <span id="items">Trống</span></div>
+        <div id="shop" class="active">
+            <h2>Shop</h2>
+            <button onclick="buyChest(1)">Rương 1 TON</button>
+            <button onclick="buyChest(3)">Rương 3 TON</button>
+            <button onclick="buyChest(6)">Rương 6 TON</button>
+            <button onclick="buyChest(10)">Rương 10 TON</button>
+        </div>
+        <div id="referral">Mời bạn: <input id="refLink" readonly></div>
+        <div id="withdraw">
+            <button onclick="withdraw('TON')">Rút TON (1000 TCT = 0.1 TON)</button>
+            <button onclick="withdraw('USDT')">Rút USDT (1000 TCT = 0.5 USDT)</button>
+        </div>
+    </div>
+    <div class="footer">
+        <div onclick="showTab('mine')">Mine</div>
+        <div onclick="showTab('inventory')">Kho</div>
+        <div onclick="showTab('shop')">Shop</div>
+        <div onclick="showTab('referral')">Giới thiệu</div>
+        <div onclick="showTab('withdraw')">Rút tiền</div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        const user = tg.initDataUnsafe.user;
+
+        if (user) {
+            document.getElementById("refLink").value = `t.me/TreasureChestBot?start=${user.id}`;
+        }
+
+        function buyChest(ton) {
+            tg.sendData(JSON.stringify({ action: "buy_chest", userId: user.id, ton: ton }));
+        }
+
+        function withdraw(currency) {
+            tg.sendData(JSON.stringify({ action: "withdraw", userId: user.id, currency: currency }));
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.content > div').forEach(div => div.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+        }
+    </script>
+</body>
+</html>
