@@ -1,0 +1,213 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 265 89% 64%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 265 89% 78%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 265 89% 64%;
+  --radius: 0.5rem;
+  --chart-1: 38 92% 50%;
+  --chart-2: 265 89% 78%;
+  --chart-3: 0 62.8% 30.6%;
+  --chart-4: 211 100% 50%;
+  --chart-5: 130 50% 60%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  body {
+    @apply font-sans antialiased text-foreground;
+    background-image: url('@assets/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .sunburst-bg {
+    background: transparent;
+  }
+  
+  /* Transparentize containers to see background */
+  .bg-gray-800, .bg-gray-900, .bg-background, .bg-card, .bg-popover, .bg-muted {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(5px);
+  }
+  
+  .bg-gray-800\/50 {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(3px);
+  }
+
+  .card-glow {
+    box-shadow: 0 0 15px hsla(var(--primary), 0.3);
+  }
+
+  .gradient-btn {
+    @apply bg-gradient-to-r from-primary to-[#EC4899] hover:opacity-90 transition-opacity;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.egg-container {
+  perspective: 800px;
+}
+
+.egg {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+
+/* Hiệu ứng cho thanh điều hướng */
+@keyframes nav-pulse {
+  0%, 100% { box-shadow: 0 0 8px 2px rgba(124, 58, 237, 0.4); }
+  50% { box-shadow: 0 0 12px 4px rgba(124, 58, 237, 0.6); }
+}
+
+.nav-active-indicator {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: hsl(var(--primary));
+  animation: nav-pulse 2s infinite ease-in-out;
+}
+
+/* Mobile styling */
+:root {
+  --mobile-width: 375px;
+  --mobile-height: 812px;
+}
+
+/* Mobile container styling */
+.mobile-container {
+  width: 100%;
+  max-width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-image: url("@assets/background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Add a dark overlay to ensure text is readable on the background */
+.mobile-container::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Add phone-like border radius to the app container on larger screens */
+@media (min-width: 500px) {
+  .mobile-container {
+    border-radius: 2rem;
+    border: 10px solid #000;
+    box-shadow: 0 0 0 2px #333, 0 0 30px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+    width: var(--mobile-width) !important;
+    height: var(--mobile-height);
+    max-height: 95vh;
+  }
+  
+  /* Add notch styling */
+  .mobile-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 25px;
+    background-color: #000;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    z-index: 999;
+  }
+  
+  /* Navigation bar for mobile container */
+  nav.mobile-nav {
+    width: var(--mobile-width) !important;
+    max-width: var(--mobile-width) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    border-bottom-left-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem;
+    position: fixed !important;
+    bottom: 0 !important;
+  }
+  
+  /* Always ensure navigation stays at bottom regardless of content */
+  .sticky-nav {
+    position: fixed !important;
+    bottom: 0 !important;
+    z-index: 9999 !important;
+  }
+}
+
+/* Global sticky nav styles */
+.sticky-nav {
+  position: fixed !important;
+  bottom: 0 !important;
+  z-index: 9999 !important;
+}

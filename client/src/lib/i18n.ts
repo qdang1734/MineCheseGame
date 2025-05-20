@@ -1,0 +1,366 @@
+import { languages } from '@/components/ui/language-selector';
+
+// Define the translations interface
+interface Translations {
+  [language: string]: {
+    [key: string]: string;
+  };
+}
+
+// All translations for the app
+export const translations: Translations = {
+  en: {
+    // Common
+    'balance': 'Balance',
+    'totalReward': 'Total Reward',
+    'dailyReward': 'Daily Reward',
+    'collection': 'Collection',
+    'whatIsInside': 'What\'s Inside?',
+    'earnsPerDay': 'Earns per day',
+    'dropChance': 'Drop chance',
+    'loading': 'Loading...',
+    'openingEgg': 'Opening...',
+    'player': 'Player',
+    'beginner': 'Beginner',
+    'eggsOpened': 'ChestOpened',
+    // Navigation
+    'home': 'Home',
+    'stats': 'Stats',
+    'invite': 'Invite',
+    'wallet': 'Wallet',
+    // Wallet Screen
+    'connectWallet': 'Connect Wallet',
+    'connectingWallet': 'Connecting...',
+    'walletConnected': 'Wallet Connected',
+    'yourWalletAddress': 'Your Wallet Address',
+    'deposit': 'Deposit',
+    'withdraw': 'Withdraw',
+    'disconnectWallet': 'Disconnect Wallet',
+    'tonGame': 'TON Game Balance',
+    'tonWallet': 'TON Wallet Balance',
+    'stayConnectedEarnReward': 'Stay connected and earn rewards',
+    'totalAssets': 'Total assets',
+    'viewTransactions': 'View transactions',
+    'assets': 'Assets',
+    'refresh': 'Refresh',
+    // Invite Screen
+    'inviteFriends': 'Invite Friends',
+    'earnTonCoin': 'Earn more TON coin',
+    'totalFriends': 'Total friends',
+    'tonEarned': 'TON Earned',
+    'latestRewards': 'Latest Rewards',
+    'listFriends': 'List friends',
+    'rewards': 'Rewards',
+    'noData': 'No data',
+    'copyInviteLink': 'Copy invite link',
+    'shareInviteLink': 'Share invite link',
+    'reward': 'Reward',
+    'eachChestOpened': 'Each chest opened by your friend',
+    'invite1Friend': 'Invite 1 friend',
+    'invite1PremiumFriend': 'Invite 1 premium friend',
+    'friendOpenChest': '*Friend open at least 1 chest',
+    
+    // Eggs
+    'miniEgg': 'Mini Chest',
+    'starterEgg': 'Starter Chest',
+    'proEgg': 'Pro Chest',
+    'genesisEgg': 'Genesis Chest',
+    'opening': 'Opening...',
+    
+    // Kitties
+    'congratulations': 'Congratulations!',
+    'youGotNewCat': 'You got a new cat!!!',
+    'awesome': 'Awesome!',
+    'possibleCats': 'Possible Cats',
+    'tonsPerDay': 'TON / Day',
+    'noCats': 'No cats found for this chest',
+    'noCollection': 'No items in the collection',
+    'openToGetItems': 'Buy and open chests to get items!',
+  },
+  ru: {
+    // Common
+    'balance': 'Баланс',
+    'totalReward': 'Общая награда',
+    'dailyReward': 'Дневная награда',
+    'collection': 'Коллекция',
+    'whatIsInside': 'Что внутри?',
+    'earnsPerDay': 'Зарабатывает в день',
+    'dropChance': 'Шанс выпадения',
+    'loading': 'Загрузка...',
+    'openingEgg': 'Открывается...',
+    'player': 'Игрок',
+    'beginner': 'Новичок',
+    'eggsOpened': 'Сундуков открыто',
+    // Navigation
+    'home': 'Главная',
+    'stats': 'Статистика',
+    'invite': 'Пригласить',
+    'wallet': 'Кошелек',
+    // Wallet Screen
+    'connectWallet': 'Подключить кошелек',
+    'connectingWallet': 'Подключение...',
+    'walletConnected': 'Кошелек подключен',
+    'yourWalletAddress': 'Адрес вашего кошелька',
+    'deposit': 'Пополнить',
+    'withdraw': 'Вывести',
+    'disconnectWallet': 'Отключить кошелек',
+    'tonGame': 'Баланс игры TON',
+    'tonWallet': 'Баланс кошелька TON',
+    'stayConnectedEarnReward': 'Оставайтесь на связи и зарабатывайте награды',
+    'totalAssets': 'Общие активы',
+    'viewTransactions': 'Просмотр транзакций',
+    'assets': 'Активы',
+    'refresh': 'Обновить',
+    // Invite Screen
+    'inviteFriends': 'Пригласить друзей',
+    'earnTonCoin': 'Заработать больше TON',
+    'totalFriends': 'Всего друзей',
+    'tonEarned': 'Заработано TON',
+    'latestRewards': 'Последние награды',
+    'listFriends': 'Список друзей',
+    'rewards': 'Награды',
+    'noData': 'Нет данных',
+    'copyInviteLink': 'Копировать ссылку',
+    'shareInviteLink': 'Поделиться ссылкой',
+    'reward': 'Награда',
+    'eachChestOpened': 'Каждый сундук, открытый вашим другом',
+    'invite1Friend': 'Пригласить 1 друга',
+    'invite1PremiumFriend': 'Пригласить 1 премиум друга',
+    'friendOpenChest': '*Друг должен открыть хотя бы 1 сундук',
+    
+    // Eggs
+    'miniEgg': 'Мини сундук',
+    'starterEgg': 'Начальный сундук',
+    'proEgg': 'Про сундук',
+    'genesisEgg': 'Генезис сундук',
+    'opening': 'Открывается...',
+    
+    // Kitties
+    'congratulations': 'Поздравляем!',
+    'youGotNewCat': 'Вы получили нового кота!!!',
+    'awesome': 'Круто!',
+    'possibleCats': 'Возможные коты',
+    'tonsPerDay': 'TON / день',
+    'noCats': 'Не найдено котов для этого сундука',
+    'noCollection': 'Нет предметов в коллекции',
+    'openToGetItems': 'Купите и откройте сундуки, чтобы получить предметы!',
+  },
+  cn: {
+    // Common
+    'balance': '余额',
+    'totalReward': '总奖励',
+    'dailyReward': '每日奖励',
+    'collection': '收藏',
+    'whatIsInside': '里面有什么？',
+    'earnsPerDay': '每天赚取',
+    'dropChance': '掉落几率',
+    'loading': '加载中...',
+    'openingEgg': '正在打开...',
+    'player': '玩家',
+    'beginner': '初学者',
+    'eggsOpened': '已开宝箱',
+    // Navigation
+    'home': '首页',
+    'stats': '统计',
+    'invite': '邀请',
+    'wallet': '钱包',
+    // Wallet Screen
+    'connectWallet': '连接钱包',
+    'connectingWallet': '正在连接...',
+    'walletConnected': '钱包已连接',
+    'yourWalletAddress': '你的钱包地址',
+    'deposit': '充值',
+    'withdraw': '提现',
+    'disconnectWallet': '断开钱包连接',
+    'tonGame': 'TON 游戏余额',
+    'tonWallet': 'TON 钱包余额',
+    'stayConnectedEarnReward': '保持连接以获得奖励',
+    'totalAssets': '总资产',
+    'viewTransactions': '查看交易',
+    'assets': '资产',
+    'refresh': '刷新',
+    // Invite Screen
+    'inviteFriends': '邀请好友',
+    'earnTonCoin': '赚取更多 TON 币',
+    'totalFriends': '好友总数',
+    'tonEarned': '赚取的 TON',
+    'latestRewards': '最新奖励',
+    'listFriends': '好友列表',
+    'rewards': '奖励',
+    'noData': '没有数据',
+    'copyInviteLink': '复制邀请链接',
+    'shareInviteLink': '分享邀请链接',
+    'reward': '奖励',
+    'eachChestOpened': '好友每开启一个宝箱',
+    'invite1Friend': '邀请 10 位好友',
+    'invite1PremiumFriend': '邀请 100 位好友',
+    'friendOpenChest': '*好友需要至少开启 1 个宝箱',
+    
+    // Eggs
+    'miniEgg': '迷你宝箱',
+    'starterEgg': '初级宝箱',
+    'proEgg': '专业宝箱',
+    'genesisEgg': '创世宝箱',
+    'opening': '正在打开...',
+    
+    // Kitties
+    'congratulations': '恭喜！',
+    'youGotNewCat': '你得到了一只新猫！！！',
+    'awesome': '太棒了！',
+    'possibleCats': '可能的猫咪',
+    'tonsPerDay': 'TON / 天',
+    'noCats': '没有找到这个宝箱的猫',
+    'noCollection': '收藏中没有物品',
+    'openToGetItems': '购买并打开宝箱以获取物品！',
+  },
+  kr: {
+    // Common
+    'balance': '잔액',
+    'totalReward': '총 보상',
+    'dailyReward': '일일 보상',
+    'collection': '컬렉션',
+    'whatIsInside': '안에 무엇이 있나요?',
+    'earnsPerDay': '하루 수익',
+    'dropChance': '드롭 확률',
+    'loading': '로딩 중...',
+    'openingEgg': '여는 중...',
+    'player': '플레이어',
+    'beginner': '초보자',
+    'eggsOpened': '개방된 상자',
+    // Navigation
+    'home': '홈',
+    'stats': '통계',
+    'invite': '초대',
+    'wallet': '지갑',
+    // Wallet Screen
+    'connectWallet': '지갑 연결',
+    'connectingWallet': '연결 중...',
+    'walletConnected': '지갑이 연결됨',
+    'yourWalletAddress': '지갑 주소',
+    'deposit': '입금',
+    'withdraw': '출금',
+    'disconnectWallet': '지갑 연결 해제',
+    'tonGame': 'TON 게임 잔액',
+    'tonWallet': 'TON 지갑 잔액',
+    'stayConnectedEarnReward': '연결 상태를 유지하고 보상을 받으세요',
+    'totalAssets': '총 자산',
+    'viewTransactions': '거래 내역 보기',
+    'assets': '자산',
+    'refresh': '새로고침',
+    // Invite Screen
+    'inviteFriends': '친구 초대',
+    'earnTonCoin': '더 많은 TON 코인 획득',
+    'totalFriends': '총 친구 수',
+    'tonEarned': '획득한 TON',
+    'latestRewards': '최근 보상',
+    'listFriends': '친구 목록',
+    'rewards': '보상',
+    'noData': '데이터 없음',
+    'copyInviteLink': '초대 링크 복사',
+    'shareInviteLink': '초대 링크 공유',
+    'reward': '보상',
+    'eachChestOpened': '친구가 상자를 열 때마다',
+    'invite1Friend': '10명의 친구 초대',
+    'invite1PremiumFriend': '100명의 친구 초대',
+    'friendOpenChest': '*친구가 최소 1개의 상자를 열어야 함',
+    
+    // Eggs
+    'miniEgg': '미니 보물상자',
+    'starterEgg': '초보자 보물상자',
+    'proEgg': '전문가 보물상자',
+    'genesisEgg': '창세기 보물상자',
+    'opening': '여는 중...',
+    
+    // Kitties
+    'congratulations': '축하합니다!',
+    'youGotNewCat': '새로운 고양이를 얻었습니다!!!',
+    'awesome': '멋져요!',
+    'possibleCats': '가능한 고양이',
+    'tonsPerDay': 'TON / 일',
+    'noCats': '이 보물상자에 대한 고양이를 찾을 수 없습니다',
+    'noCollection': '컬렉션에 아이템이 없습니다',
+    'openToGetItems': '보물상자를 구매하고 열어서 아이템을 얻으세요!',
+  },
+  vn: {
+    // Common
+    'balance': 'Số dư',
+    'totalReward': 'Tổng phần thưởng',
+    'dailyReward': 'Phần thưởng hàng ngày',
+    'collection': 'Bộ sưu tập',
+    'whatIsInside': 'Bên trong có gì?',
+    'earnsPerDay': 'Thu nhập mỗi ngày',
+    'dropChance': 'Tỷ lệ rơi',
+    'loading': 'Đang tải...',
+    'openingEgg': 'Đang mở...',
+    'player': 'Người chơi',
+    'beginner': 'Người mới',
+    'eggsOpened': 'Rương đã mở',
+    // Navigation
+    'home': 'Trang chủ',
+    'stats': 'Thống kê',
+    'invite': 'Mời bạn',
+    'wallet': 'Ví',
+    // Wallet Screen
+    'connectWallet': 'Kết nối ví',
+    'connectingWallet': 'Đang kết nối...',
+    'walletConnected': 'Đã kết nối ví',
+    'yourWalletAddress': 'Địa chỉ ví của bạn',
+    'deposit': 'Nạp tiền',
+    'withdraw': 'Rút tiền',
+    'disconnectWallet': 'Ngắt kết nối ví',
+    'tonGame': 'Số dư TON trong game',
+    'tonWallet': 'Số dư ví TON',
+    'stayConnectedEarnReward': 'Duy trì kết nối để nhận phần thưởng',
+    'totalAssets': 'Tổng tài sản',
+    'viewTransactions': 'Xem giao dịch',
+    'assets': 'Tài sản',
+    'refresh': 'Làm mới',
+    // Invite Screen
+    'inviteFriends': 'Mời bạn bè',
+    'earnTonCoin': 'Kiếm thêm TON coin',
+    'totalFriends': 'Tổng số bạn bè',
+    'tonEarned': 'TON đã kiếm',
+    'latestRewards': 'Phần thưởng gần đây',
+    'listFriends': 'Danh sách bạn bè',
+    'rewards': 'Phần thưởng',
+    'noData': 'Không có dữ liệu',
+    'copyInviteLink': 'Sao chép link mời',
+    'shareInviteLink': 'Chia sẻ link mời',
+    'reward': 'Phần thưởng',
+    'eachChestOpened': 'Mỗi khi bạn bè mở rương',
+    'invite1Friend': 'Mời được 10 bạn',
+    'invite1PremiumFriend': 'Mời được 100 bạn',
+    'friendOpenChest': '*Bạn bè phải mở ít nhất 1 rương',
+    
+    // Eggs
+    'miniEgg': 'Rương báu nhỏ',
+    'starterEgg': 'Rương báu khởi đầu',
+    'proEgg': 'Rương báu cao cấp',
+    'genesisEgg': 'Rương báu kim cương',
+    'opening': 'Đang mở...',
+    
+    // Kitties
+    'congratulations': 'Chúc mừng!',
+    'youGotNewCat': 'Bạn đã nhận được một chú mèo mới!!!',
+    'awesome': 'Tuyệt vời!',
+    'possibleCats': 'Các chú mèo có thể nhận',
+    'tonsPerDay': 'TON / ngày',
+    'noCats': 'Không tìm thấy mèo cho rương này',
+    'noCollection': 'Không có vật phẩm trong bộ sưu tập',
+    'openToGetItems': 'Mua và mở rương báu để nhận vật phẩm!',
+  }
+};
+
+// Get current language from localStorage or default to 'en'
+export const getCurrentLanguage = (): string => {
+  const savedLang = localStorage.getItem('app_language');
+  return savedLang && languages.some(lang => lang.code === savedLang) 
+    ? savedLang 
+    : 'en';
+};
+
+// Translation function
+export const translate = (key: string): string => {
+  const currentLang = getCurrentLanguage();
+  return translations[currentLang]?.[key] || translations['en'][key] || key;
+};
