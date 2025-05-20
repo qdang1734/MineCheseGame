@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: nebulaChest
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: APP_URL
+        # This will be filled in after deployment
+        value: "https://nebula-chest.onrender.com"
+      - key: DATABASE_URL
+        # This should be a connection string to your PostgreSQL database
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        # Telegram Bot Token
+        value: "7709528475:AAEfAIRIj56GAZRkTg_or9GEO7uuE_pwHbs"
+      - key: GAME_WALLET_ADDRESS
+        # TON Wallet Address for the game
+        value: "UQBoJh_jALLDvekZ-nna3fE-09PEYgAVKq1JRcMvP2KYsHG9"
